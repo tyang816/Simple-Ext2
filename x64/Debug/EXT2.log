@@ -1,0 +1,4 @@
+﻿Command.obj : error LNK2019: 无法解析的外部符号 "__int64 __cdecl writeFile(int,__int64,__int64,unsigned char *)" (?writeFile@@YA_JH_J0PEAE@Z)，函数 "void __cdecl vim(void)" (?vim@@YAXXZ) 中引用了该符号
+    已定义且可能匹配的符号上的提示:
+      "__int64 __cdecl writeFile(int,__int64,__int64,unsigned char const *)" (?writeFile@@YA_JH_J0PEBE@Z)
+E:\baidu\BaiduDiskDownloads\操作系统课程设计\EXT2\x64\Debug\EXT2.exe : fatal error LNK1120: 1 个无法解析的外部命令

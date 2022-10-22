@@ -1,5 +1,5 @@
 /*
-    ÃüÁîÎÄ¼şµÄ¹¤¾ß°ü£¬Ö÷Òª°üº¬ÊµÏÖcommandµÄ¸¨Öú¹¤¾ßº¯Êı
+    å‘½ä»¤æ–‡ä»¶çš„å·¥å…·åŒ…ï¼Œä¸»è¦åŒ…å«å®ç°commandçš„è¾…åŠ©å·¥å…·å‡½æ•°
 */
 #include "Command.h"
 #include "CommandUtil.h"
@@ -10,21 +10,21 @@
 #include <conio.h>
 
 extern string cmdStr, paraStr;
-extern FCBIndex curFCBIndex;   //µ±Ç°ÎÄ¼ş¼ĞFCBºÅ
-extern User userOfBuff;     //ÓÃÓÚ»º´æÄÚ´æÖĞµÄÓÃ»§                                                                                                                             // ÎÄ¼şÏµÍ³Ãû³Æ
-extern FILE* UserFile;            // ´ò¿ªÎÄ¼şÖ¸Õë
+extern FCBIndex curFCBIndex;   //å½“å‰æ–‡ä»¶å¤¹FCBå·
+extern User userOfBuff;     //ç”¨äºç¼“å­˜å†…å­˜ä¸­çš„ç”¨æˆ·                                                                                                                             // æ–‡ä»¶ç³»ç»Ÿåç§°
+extern FILE* UserFile;            // æ‰“å¼€æ–‡ä»¶æŒ‡é’ˆ
 
-//ÃüÁî¶¨Òå£¬Ò»¹²21¸ölinuxÃüÁî
+//å‘½ä»¤å®šä¹‰ï¼Œä¸€å…±21ä¸ªlinuxå‘½ä»¤
 extern vector<string> Commands;
 extern SuperBlock Super;
 
-//³õÊ¼»¯
+//åˆå§‹åŒ–
 void init(){
-    // µ±Ç°Ä¿Â¼Îª¸ùÄ¿Â¼
+    // å½“å‰ç›®å½•ä¸ºæ ¹ç›®å½•
     curFCBIndex = 0;
 }
 
-//ÉèÖÃÎÄ¼şÂ·¾¶£¬ÓÃÓÚ»ØÏÔ
+//è®¾ç½®æ–‡ä»¶è·¯å¾„ï¼Œç”¨äºå›æ˜¾
 void pathset(){
     string curPath;
     if (curFCBIndex == 0) curPath = "";
@@ -32,70 +32,70 @@ void pathset(){
         FCBIndex tempFCBIndex = curFCBIndex;
         FileControlBlock fcb;
         while (tempFCBIndex != 0){
-            fileInfo(tempFCBIndex, &fcb);//Ê×´ÎÒÀ¾İµ±Ç°FCBºÅ£¬²éÕÒµ±Ç°ÎÄ¼ş¼ĞĞÅÏ¢
+            fileInfo(tempFCBIndex, &fcb);//é¦–æ¬¡ä¾æ®å½“å‰FCBå·ï¼ŒæŸ¥æ‰¾å½“å‰æ–‡ä»¶å¤¹ä¿¡æ¯
             curPath = fcb.FileName + curPath;
             curPath = '/' + curPath;
             tempFCBIndex = fcb.Parent;
         }
     }
-    printf("[%s]@µÚ°Ë×é:~", userOfBuff.UserName);
+    printf("[%s]@tyang:~", userOfBuff.UserName);
     cout << curPath << "#";
 }
 
-//·ÖÎöº¯Êı£¬·ÖÎöÃüÁî¼°²ÎÊı
-//½á¹û: 0-16ÎªÏµÍ³ÃüÁî, 17ÎªÃüÁî´íÎó
+//åˆ†æå‡½æ•°ï¼Œåˆ†æå‘½ä»¤åŠå‚æ•°
+//ç»“æœ: 0-16ä¸ºç³»ç»Ÿå‘½ä»¤, 17ä¸ºå‘½ä»¤é”™è¯¯
 int parseCommand(){
     string line = "";
     cmdStr = "";
-    paraStr = "";          // s´æÈ«²¿ÊäÈë£»cmdStrÓÃÓÚ´æÃüÁî£»paraStrÓÃÓÚ´æ²ÎÊı
-    int cmdId = 0;      //ÃüÁî±àºÅ
+    paraStr = "";          // så­˜å…¨éƒ¨è¾“å…¥ï¼›cmdStrç”¨äºå­˜å‘½ä»¤ï¼›paraStrç”¨äºå­˜å‚æ•°
+    int cmdId = 0;      //å‘½ä»¤ç¼–å·
     while (1){
-        cmdStr = line; //¸üĞÂÎªÈ«²¿ÊäÈë
+        cmdStr = line; //æ›´æ–°ä¸ºå…¨éƒ¨è¾“å…¥
         if (line.find(' ') == -1)
-            paraStr = ""; //ÊäÈë²»´æÔÚ¿Õ¸ñ£¬ÎŞ²ÎÊı
-        else{ //ÊäÈë´æÔÚ¿Õ¸ñ£¬±íÊ¾´æÔÚ²ÎÊı
-            while (!cmdStr.empty() && cmdStr.back() == ' '){  // cmdStrÄ©Î²Îª¿Õ¸ñ(cmdStr.back())£¬»¹Î´¶ÁÈ¡²ÎÊı                            
-                cmdStr = cmdStr.substr(0, cmdStr.length() - 1); //½«cmdStrµÄÃüÁî²¿·ÖÌáÈ¡³ö
+            paraStr = ""; //è¾“å…¥ä¸å­˜åœ¨ç©ºæ ¼ï¼Œæ— å‚æ•°
+        else{ //è¾“å…¥å­˜åœ¨ç©ºæ ¼ï¼Œè¡¨ç¤ºå­˜åœ¨å‚æ•°
+            while (!cmdStr.empty() && cmdStr.back() == ' '){  // cmdStræœ«å°¾ä¸ºç©ºæ ¼(cmdStr.back())ï¼Œè¿˜æœªè¯»å–å‚æ•°                            
+                cmdStr = cmdStr.substr(0, cmdStr.length() - 1); //å°†cmdStrçš„å‘½ä»¤éƒ¨åˆ†æå–å‡º
             }
-            while (!cmdStr.empty() > 0 && cmdStr.front() == ' '){  //ÃüÁî¿ªÊ¼¿Õ¸ñÈ¥µô
-                cmdStr = cmdStr.substr(1); //´ÓµÚÒ»¸ö×Ö·û¿ªÊ¼
+            while (!cmdStr.empty() > 0 && cmdStr.front() == ' '){  //å‘½ä»¤å¼€å§‹ç©ºæ ¼å»æ‰
+                cmdStr = cmdStr.substr(1); //ä»ç¬¬ä¸€ä¸ªå­—ç¬¦å¼€å§‹
             }
-            if (cmdStr.find(' ') == -1) paraStr = ""; // cmdStrÎŞ¿Õ¸ñ
-            else paraStr = cmdStr.substr(cmdStr.find_first_of(' ') + 1); //½«²ÎÊı²¿·Ö´«ÈëparaStr
-            while (!paraStr.empty() && paraStr.back() == ' '){ //½«²ÎÊıÄ©Î²¶àÓà¿Õ¸ñÈ¥µô
+            if (cmdStr.find(' ') == -1) paraStr = ""; // cmdStræ— ç©ºæ ¼
+            else paraStr = cmdStr.substr(cmdStr.find_first_of(' ') + 1); //å°†å‚æ•°éƒ¨åˆ†ä¼ å…¥paraStr
+            while (!paraStr.empty() && paraStr.back() == ' '){ //å°†å‚æ•°æœ«å°¾å¤šä½™ç©ºæ ¼å»æ‰
                 paraStr = paraStr.substr(0, paraStr.length() - 1);
             }
-            while (paraStr.length() > 0 && paraStr[0] == ' '){ //½«²ÎÊı¿ªÍ·¿Õ¸ñÈ¥³ı
+            while (paraStr.length() > 0 && paraStr[0] == ' '){ //å°†å‚æ•°å¼€å¤´ç©ºæ ¼å»é™¤
                 paraStr = paraStr.substr(1);
             }
-            cmdStr = cmdStr.substr(0, cmdStr.find_first_of(' ')); //½«whileÑ­»·¿ªÊ¼µÄÈ«²¿ÊäÈëcmdStr£¬¸üĞÂÎªÃüÁî
-                                                      //µÚ¶ş¸ö²ÎÊıÊÇµÚÒ»¸ö¿Õ¸ñµÄÎ»ÖÃ£¬ÓëÃüÁî³¤¶ÈÏàµÈ
+            cmdStr = cmdStr.substr(0, cmdStr.find_first_of(' ')); //å°†whileå¾ªç¯å¼€å§‹çš„å…¨éƒ¨è¾“å…¥cmdStrï¼Œæ›´æ–°ä¸ºå‘½ä»¤
+                                                      //ç¬¬äºŒä¸ªå‚æ•°æ˜¯ç¬¬ä¸€ä¸ªç©ºæ ¼çš„ä½ç½®ï¼Œä¸å‘½ä»¤é•¿åº¦ç›¸ç­‰
         }
-        int ch = _getch(); //´Ó¿ØÖÆÌ¨¶ÁÈ¡Ò»¸ö×Ö·û£¬½ÓÊÜÒ»¸öÈÎÒâ¼üµÄÊäÈë£¬²»ÓÃ°´»Ø³µ¾Í·µ»Ø£¬µ«²»ÏÔÊ¾ÔÚÆÁÄ»ÉÏ£¬ÔÚconio.hÖĞ
-        if (ch == 8){ //ÍË¸ñ
+        int ch = _getch(); //ä»æ§åˆ¶å°è¯»å–ä¸€ä¸ªå­—ç¬¦ï¼Œæ¥å—ä¸€ä¸ªä»»æ„é”®çš„è¾“å…¥ï¼Œä¸ç”¨æŒ‰å›è½¦å°±è¿”å›ï¼Œä½†ä¸æ˜¾ç¤ºåœ¨å±å¹•ä¸Šï¼Œåœ¨conio.hä¸­
+        if (ch == 8){ //é€€æ ¼
             if (!line.empty()){
-                printf("%c", 8);                 //»ØÍËÖÁÇ°Ò»¸ö×Ö·ûµÄÎ»ÖÃ
-                printf(" ");                     //¿Õ¸ñÈ¡´ú
-                printf("%c", 8);                 //ÔÙ»ØÍËÖÁÇ°Ò»¸ö×Ö·ûµÄÎ»ÖÃ£¬Ôö¼Ó½»»¥ÓÑºÃ
-                line = line.substr(0, line.length() - 1); //È¥µô×îºóÒ»¸ö×Ö·û
+                printf("%c", 8);                 //å›é€€è‡³å‰ä¸€ä¸ªå­—ç¬¦çš„ä½ç½®
+                printf(" ");                     //ç©ºæ ¼å–ä»£
+                printf("%c", 8);                 //å†å›é€€è‡³å‰ä¸€ä¸ªå­—ç¬¦çš„ä½ç½®ï¼Œå¢åŠ äº¤äº’å‹å¥½
+                line = line.substr(0, line.length() - 1); //å»æ‰æœ€åä¸€ä¸ªå­—ç¬¦
             }
         }
-        else if (ch == 13){ //»Ø³µ
-            for (cmdId = 0; cmdId < Commands.size(); cmdId++){//ÈôÎ´Æ¥Åä³É¹¦£¬ÔòidÎª18£¬´ËÊ±½«ÅĞ¶ÏÃüÁî´íÎó
-                if (cmdStr == Commands[cmdId]) break; //Æ¥ÅäÃüÁî
+        else if (ch == 13){ //å›è½¦
+            for (cmdId = 0; cmdId < Commands.size(); cmdId++){//è‹¥æœªåŒ¹é…æˆåŠŸï¼Œåˆ™idä¸º18ï¼Œæ­¤æ—¶å°†åˆ¤æ–­å‘½ä»¤é”™è¯¯
+                if (cmdStr == Commands[cmdId]) break; //åŒ¹é…å‘½ä»¤
             }
-            break; //½áÊøÊäÈë
+            break; //ç»“æŸè¾“å…¥
         }
         else if (ch == 9)
         { // tab
         }
         else if (ch == ' ')
-        { //¿Õ¸ñ»ØÏÔ£¬´æÈësÖĞ
+        { //ç©ºæ ¼å›æ˜¾ï¼Œå­˜å…¥sä¸­
             printf("%c", ch);
             line.push_back(ch);
         }
         else
-        { //ÆäËû×Ö·û»ØÏÔ£¬´æÈësÖĞ
+        { //å…¶ä»–å­—ç¬¦å›æ˜¾ï¼Œå­˜å…¥sä¸­
             printf("%c", ch);
             line.push_back(ch);
         }
@@ -104,14 +104,14 @@ int parseCommand(){
         return -1;
     }
     printf("\n");
-    return cmdId; //·µ»ØÃüÁî±àºÅ
+    return cmdId; //è¿”å›å‘½ä»¤ç¼–å·
 }
 
-// result_cur ×îÖÕcdµ½µÄÎÄ¼ş½ÚµãºÅ
-// paraStr cd ºóÃæµÄÂ·¾¶´®
-// inum_cur  µ±Ç°ÎÄ¼ş¼ĞµÄ½ÚµãºÅ
+// result_cur æœ€ç»ˆcdåˆ°çš„æ–‡ä»¶èŠ‚ç‚¹å·
+// paraStr cd åé¢çš„è·¯å¾„ä¸²
+// inum_cur  å½“å‰æ–‡ä»¶å¤¹çš„èŠ‚ç‚¹å·
 int readby(string path)
-{ //¸ù¾İµ±Ç°Ä¿Â¼ºÍµÚ¶ş¸ö²ÎÊıÈ·¶¨×ª¹ıÈ¥µÄÄ¿Â¼
+{ //æ ¹æ®å½“å‰ç›®å½•å’Œç¬¬äºŒä¸ªå‚æ•°ç¡®å®šè½¬è¿‡å»çš„ç›®å½•
     int result_cur = 0;
     string s = path;
     if (s.find('/') != -1)
@@ -125,32 +125,32 @@ int readby(string path)
     int temp_cur = curFCBIndex;
     vector<string> v;
     while (s.find('/') != -1)
-    {                                                   // ½«Â·¾¶µÄÃ¿Ò»¼¶ÎÄ¼ş¼Ğ´æÈëvector
-        v.push_back(s.substr(0, s.find_first_of('/'))); // ½ØÈ¡µÚ1¸öĞ±¸ÜÖ®Ç°µÄ×Ö·û´®
+    {                                                   // å°†è·¯å¾„çš„æ¯ä¸€çº§æ–‡ä»¶å¤¹å­˜å…¥vector
+        v.push_back(s.substr(0, s.find_first_of('/'))); // æˆªå–ç¬¬1ä¸ªæ–œæ ä¹‹å‰çš„å­—ç¬¦ä¸²
         s = s.substr(s.find_first_of('/') + 1);         //
     }
     if (v.empty())
-    { // ËµÃ÷Ã»ÓĞ×ÓÄ¿Â¼£¬Ö±½Ó·µ»Ø
+    { // è¯´æ˜æ²¡æœ‰å­ç›®å½•ï¼Œç›´æ¥è¿”å›
         return curFCBIndex;
     }
     if (v[0].empty())
-    { // Ã»ÓĞÈÎºÎÒÆ¶¯£¬ÒÀ¾ÉÔÚµ±Ç°ÎÄ¼ş¼Ğ
+    { // æ²¡æœ‰ä»»ä½•ç§»åŠ¨ï¼Œä¾æ—§åœ¨å½“å‰æ–‡ä»¶å¤¹
         temp_cur = 0;
     }
-    else if (v[0] == ".."){    // ·µ»Øµ½ÉÏÒ»¼¶Ä¿Â¼
-        temp_cur = find(curFCBIndex, v[0]); // ·µ»ØÉÏÒ»¼¶Ä¿Â¼µÄÄ¿Â¼ºÅ
+    else if (v[0] == ".."){    // è¿”å›åˆ°ä¸Šä¸€çº§ç›®å½•
+        temp_cur = find(curFCBIndex, v[0]); // è¿”å›ä¸Šä¸€çº§ç›®å½•çš„ç›®å½•å·
     }
     else{
         temp_cur = find(curFCBIndex, v[0]);
     }
-    for (unsigned int count = 1; count < v.size(); count++){ // Öğ¼¶ÕÒµ½cdµÄ×îÖÕÎÄ¼ş¼Ğ
+    for (unsigned int count = 1; count < v.size(); count++){ // é€çº§æ‰¾åˆ°cdçš„æœ€ç»ˆæ–‡ä»¶å¤¹
         temp_cur = find(temp_cur, v[count]);
     }
     result_cur = temp_cur;
     return result_cur;
 }
 
-//Çå¿ÕÄÚ´æÖĞ´æÔÚµÄÓÃ»§ÃûºÍÃÜÂë
+//æ¸…ç©ºå†…å­˜ä¸­å­˜åœ¨çš„ç”¨æˆ·åå’Œå¯†ç 
 void freeUserOfBuff(){
     for (int i = 0; i < 14; i++) {
         userOfBuff.UserName[i] = '\0';
@@ -158,8 +158,8 @@ void freeUserOfBuff(){
     }
 }
 
-// ¹¦ÄÜ: ÏÔÊ¾´íÎó
+// åŠŸèƒ½: æ˜¾ç¤ºé”™è¯¯
 void errcmd(){
-    printf("ÃüÁî²»´æÔÚ£¡Çë²é¿´help \n");
+    printf("å‘½ä»¤ä¸å­˜åœ¨ï¼è¯·æŸ¥çœ‹help \n");
 }
 
